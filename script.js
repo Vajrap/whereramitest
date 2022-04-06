@@ -48,31 +48,23 @@ const whereAmI = async function () {
   const pos = await getPosition();
   const { latitude: lat, longitude: lng } = pos.coords;
   console.log(lat, lng);
-  //await for lat lng from geocode bf cnt_data
-  await fetch(
+  const data = await fetch(
     `https://geocode.xyz/${lat},${lng}?geoit=json&auth=218563543476776421031x2922`
-  )
-    .then(res => {
-      if (!res.ok) throw new Error(`Problem with geocoding ${res.status}`);
-      return res.json();
-    })
-    .then(data => {
-      console.log(data);
-      curCity = data.city;
-      curCountry = data.country;
-      countryUse = curCountry.toString().toLowerCase();
-    });
+  );
+  const dataJson = await data.json();
+  curCity = dataJson.city;
+  curCountry = dataJson.country;
+  countryUse = curCountry.toString().toLowerCase();
+  console.log(curCity, curCountry, countryUse);
+  console.log(dataJson);
 
-  //await for cnt_data
-  await fetch(`https://restcountries.com/v3.1/name/${countryUse}`)
-    .then(function (response) {
-      console.log(response);
-      return response.json();
-    })
-    .then(function (data) {
-      console.log(data);
-      renderCountry(data[0]);
-    });
+  // await for cnt_data
+  const cntData = await fetch(
+    `https://restcountries.com/v3.1/name/${countryUse}`
+  );
+  const cntDataJson = await cntData.json();
+  console.log(cntDataJson);
+  renderCountry(cntDataJson[0]);
 };
 
 btn.addEventListener('click', function () {
